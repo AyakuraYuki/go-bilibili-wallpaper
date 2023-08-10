@@ -69,7 +69,7 @@ func Download() {
 		for range counterChan {
 			counter += 1
 			if Verbose {
-				log.Printf("downloading [%v / %v] \r", counter, taskAmount)
+				fmt.Printf("downloading [%v / %v] \r", counter, taskAmount)
 			}
 		}
 	}()
