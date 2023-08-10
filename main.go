@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"github.com/AyakuraYuki/bilibili-wallpaper/bilibili_wallpaper"
+	"github.com/AyakuraYuki/bilibili-wallpaper/plugins/colors"
 	"log"
 	"os"
 	"path"
@@ -16,7 +17,7 @@ func init() {
 	if err != nil {
 		bilibili_wallpaper.Workdir, _ = os.UserHomeDir()
 		bilibili_wallpaper.Workdir = path.Join(bilibili_wallpaper.Workdir, "bili-wallpaper")
-		log.Printf("获取不到工作路径，切换到 %v", bilibili_wallpaper.Workdir)
+		log.Println(colors.Yellow("获取不到工作路径，切换到 %v", bilibili_wallpaper.Workdir))
 	}
 	bilibili_wallpaper.DistDir = path.Join(bilibili_wallpaper.Workdir, bilibili_wallpaper.WallpaperDir)
 	bilibili_wallpaper.DataJsonFilePath = path.Join(bilibili_wallpaper.Workdir, bilibili_wallpaper.JsonFile)
@@ -24,8 +25,7 @@ func init() {
 	// parse flags
 	flag.StringVar(&bilibili_wallpaper.Cookie, "c", "", "bilibili 用户登录浏览器 cookie，可以通过浏览器开发者工具的控制台输入 document.cookie 获得")
 	flag.StringVar(&bilibili_wallpaper.Cookie, "cookie", "", "bilibili 用户登录浏览器 cookie，可以通过浏览器开发者工具的控制台输入 document.cookie 获得")
-
-	flag.BoolVar(&bilibili_wallpaper.MultiThread, "multi-thread", false, "多线下载模式")
+	flag.BoolVar(&bilibili_wallpaper.Serial, "serial", false, "单线下载模式，如果默认的多线下载模式频繁出错，可以指定单线模式进行顺序下载")
 	flag.BoolVar(&bilibili_wallpaper.Verbose, "verbose", false, "调试模式，输出详细内容")
 
 	flag.Usage = func() {
@@ -43,11 +43,11 @@ func main() {
 	}
 
 	_ = os.MkdirAll(bilibili_wallpaper.DistDir, os.ModePerm)
-	log.Printf("工作路径 %s", bilibili_wallpaper.Workdir)
-	log.Printf("下载路径 %s", bilibili_wallpaper.DistDir)
+	log.Println(colors.Green("工作路径 %s", bilibili_wallpaper.Workdir))
+	log.Println(colors.Green("下载路径 %s", bilibili_wallpaper.DistDir))
 
 	bilibili_wallpaper.GetInfo()
 	bilibili_wallpaper.Download()
 
-	log.Println("完成")
+	log.Println(colors.Green("完成"))
 }

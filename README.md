@@ -6,6 +6,10 @@
 
 从 [release](https://github.com/AyakuraYuki/go-bilibili-wallpaper/releases) 页面下载对应系统的二进制文件包，解压到你想要同步壁纸的路径。这个程序会把壁纸同步到跟它同一个目录内的 `images` 文件夹里，重复执行则会下载新增的壁纸。
 
-```shell
-
+```text
+Usage of ./bilibili-wallpaper:
+  -c, -cookie <cookie>
+        bilibili 用户登录浏览器 cookie，可以通过浏览器开发者工具的控制台输入 document.cookie 获得
+  -multi-thread
+        多线下载模式
 ```

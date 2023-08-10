@@ -55,7 +55,9 @@ func Download() {
 			continue
 		}
 		if ok {
-			log.Println(colors.White("已存在文件 %s，跳过", fullPath))
+			if Verbose {
+				log.Println(colors.White("已存在文件 %s，跳过", fullPath))
+			}
 			continue
 		}
 		tasks = append(tasks, item)
@@ -68,13 +70,23 @@ func Download() {
 	go func() {
 		for range counterChan {
 			counter += 1
-			if Verbose {
-				fmt.Printf("downloading [%v / %v] \r", counter, taskAmount)
-			}
+			fmt.Printf("downloading [%v / %v] \r", counter, taskAmount)
 		}
 	}()
 
-	if MultiThread {
+	if Serial {
+		// 单线下载
+
+		for _, task := range tasks {
+			filename := task.Filename
+			fullPath := path.Join(DistDir, filename)
+			if err := downloadInternal(task.Url, fullPath); err == nil {
+				counterChan <- true
+			}
+		}
+
+	} else {
+		// 多线下载
 
 		partitionSize := taskAmount / Coroutines
 		funcs := make([]misc.WorkFunc, 0)
@@ -98,17 +110,9 @@ func Download() {
 			return
 		}
 
-	} else {
-
-		for _, task := range tasks {
-			filename := task.Filename
-			fullPath := path.Join(DistDir, filename)
-			if err := downloadInternal(task.Url, fullPath); err == nil {
-				counterChan <- true
-			}
-		}
-
 	}
+
+	_ = os.Remove(DataJsonFilePath)
 
 	return
 }

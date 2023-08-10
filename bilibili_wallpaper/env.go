@@ -6,7 +6,7 @@ var (
 	DistDir          string
 	DataJsonFilePath string
 	Verbose          = false
-	MultiThread      = false
+	Serial           = false
 )
 
 const (

@@ -30,7 +30,9 @@ func GetInfo() {
 	pageNum := 0
 	for {
 		api := getApi(pageNum)
-		log.Println(colors.White("请求壁纸列表: %s", api))
+		if Verbose {
+			log.Println(colors.White("请求壁纸列表: %s", api))
+		}
 
 		headers := http.Header{}
 		headers.Add("cookie", Cookie)
