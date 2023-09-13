@@ -8,8 +8,12 @@
 
 ```text
 Usage of ./bilibili-wallpaper:
-  -c, -cookie <cookie>
+  -c string
         bilibili 用户登录浏览器 cookie，可以通过浏览器开发者工具的控制台输入 document.cookie 获得
-  -multi-thread
-        多线下载模式
+  -cookie string
+        bilibili 用户登录浏览器 cookie，可以通过浏览器开发者工具的控制台输入 document.cookie 获得
+  -serial
+        单线下载模式，如果默认的多线下载模式频繁出错，可以指定单线模式进行顺序下载
+  -verbose
+        调试模式，输出详细内容
 ```
