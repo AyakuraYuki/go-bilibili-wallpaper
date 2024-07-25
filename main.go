@@ -49,5 +49,6 @@ func main() {
 	bilibili_wallpaper.GetInfo()
 	bilibili_wallpaper.Download()
 
+	fmt.Println("")
 	log.Println(colors.Green("完成"))
 }

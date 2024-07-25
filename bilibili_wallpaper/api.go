@@ -1,14 +1,16 @@
 package bilibili_wallpaper
 
 import (
+	"log"
+	"net/http"
+	"net/url"
+
+	"github.com/spf13/cast"
+
 	"github.com/AyakuraYuki/bilibili-wallpaper/plugins/colors"
 	"github.com/AyakuraYuki/bilibili-wallpaper/plugins/file"
 	cjson "github.com/AyakuraYuki/bilibili-wallpaper/plugins/json"
 	nhttp "github.com/AyakuraYuki/bilibili-wallpaper/plugins/net/http"
-	"github.com/spf13/cast"
-	"log"
-	"net/http"
-	"net/url"
 )
 
 func getApi(pageNum int) string {
@@ -30,9 +32,7 @@ func GetInfo() {
 	pageNum := 0
 	for {
 		api := getApi(pageNum)
-		if Verbose {
-			log.Println(colors.White("请求壁纸列表: %s", api))
-		}
+		verbosePrintln(colors.White("请求壁纸列表: %s", api))
 
 		headers := http.Header{}
 		headers.Add("cookie", Cookie)
@@ -42,9 +42,7 @@ func GetInfo() {
 			log.Println(colors.Red("请求壁纸列表失败: %v", err))
 			continue
 		}
-		if Verbose {
-			log.Println(colors.White("rsp => (%d) headers: %v", code, rspHeader))
-		}
+		verbosePrintln(colors.White("rsp => (%d) headers: %v", code, rspHeader))
 
 		rsp := &Rsp{}
 		if err = cjson.JSON.Unmarshal(bs, &rsp); err != nil {

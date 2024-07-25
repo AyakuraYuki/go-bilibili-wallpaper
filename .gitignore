@@ -14,3 +14,5 @@ build
 images
 data_list.json
 bilibili-wallpaper
+
+vendor/
