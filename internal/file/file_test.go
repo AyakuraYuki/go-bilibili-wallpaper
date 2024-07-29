@@ -4,7 +4,7 @@ import (
 	"os"
 	"testing"
 
-	cjson "github.com/AyakuraYuki/bilibili-wallpaper/plugins/json"
+	cjson "github.com/AyakuraYuki/bilibili-wallpaper/internal/json"
 )
 
 func TestListDir(t *testing.T) {

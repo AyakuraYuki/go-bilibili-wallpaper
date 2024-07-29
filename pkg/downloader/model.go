@@ -1,15 +1,17 @@
-package bilibili_wallpaper
+package downloader
 
-import jsoniter "github.com/json-iterator/go"
+import (
+	jsoniter "github.com/json-iterator/go"
+)
 
-type DocListRsp struct {
-	Code    int             `json:"code"`
-	Message string          `json:"message"`
-	Ttl     int             `json:"ttl"`
-	Data    *DocListRspData `json:"data"`
+type ApiResponse struct {
+	Code    int          `json:"code"`
+	Message string       `json:"message"`
+	Ttl     int          `json:"ttl"`
+	Data    *DocListData `json:"data"`
 }
 
-type DocListRspData struct {
+type DocListData struct {
 	Items []*Doc `json:"items"`
 }
 
@@ -35,6 +37,7 @@ type Picture struct {
 }
 
 type Task struct {
-	Url      string
 	Filename string
+	FullPath string
+	Url      string
 }

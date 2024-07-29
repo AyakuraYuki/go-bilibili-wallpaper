@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/binary"
 	"errors"
-	"github.com/AyakuraYuki/bilibili-wallpaper/plugins/file"
+	"github.com/AyakuraYuki/bilibili-wallpaper/internal/file"
 	"net"
 	"os"
 	"runtime"

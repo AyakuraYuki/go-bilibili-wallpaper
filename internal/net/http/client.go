@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	cjson "github.com/AyakuraYuki/bilibili-wallpaper/plugins/json"
+	cjson "github.com/AyakuraYuki/bilibili-wallpaper/internal/json"
 	"io"
 	"log"
 	"net/http"

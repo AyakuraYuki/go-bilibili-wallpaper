@@ -10,7 +10,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	cjson "github.com/AyakuraYuki/bilibili-wallpaper/plugins/json"
+	cjson "github.com/AyakuraYuki/bilibili-wallpaper/internal/json"
 )
 
 var ports = fmt.Sprintf(":%d", rand.Intn(10000)+30000)

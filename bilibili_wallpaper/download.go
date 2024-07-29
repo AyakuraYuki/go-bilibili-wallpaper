@@ -11,15 +11,15 @@ import (
 	"github.com/cavaliergopher/grab/v3"
 	"github.com/samber/lo"
 
-	"github.com/AyakuraYuki/bilibili-wallpaper/plugins/colors"
-	"github.com/AyakuraYuki/bilibili-wallpaper/plugins/file"
-	"github.com/AyakuraYuki/bilibili-wallpaper/plugins/filenamify"
-	"github.com/AyakuraYuki/bilibili-wallpaper/plugins/misc"
+	"github.com/AyakuraYuki/bilibili-wallpaper/internal/colors"
+	"github.com/AyakuraYuki/bilibili-wallpaper/internal/file"
+	"github.com/AyakuraYuki/bilibili-wallpaper/internal/filenamify"
+	"github.com/AyakuraYuki/bilibili-wallpaper/internal/misc"
 )
 
-func getUrlAndFilename() (res []*UrlAndFilename) {
-	res = make([]*UrlAndFilename, 0)
-	data, err := readExistData()
+func loadTasks() (res []*Task) {
+	res = make([]*Task, 0)
+	data, err := readDataFile()
 	if err != nil {
 		log.Println(colors.Red("读取壁纸列表暂存数据失败 %v", err))
 		return res
@@ -32,7 +32,7 @@ func getUrlAndFilename() (res []*UrlAndFilename) {
 		safetyFilename, _ := filenamify.Filenamify(description, filenamify.Options{})
 		for index, picture := range item.Pictures {
 			fileExt := filepath.Ext(picture.ImgSrc)
-			v := &UrlAndFilename{
+			v := &Task{
 				Url:      picture.ImgSrc,
 				Filename: fmt.Sprintf("[%d] [%d] %s [%dx%d]%s", item.DocId, index, safetyFilename, picture.ImgWidth, picture.ImgHeight, fileExt),
 			}
@@ -44,13 +44,13 @@ func getUrlAndFilename() (res []*UrlAndFilename) {
 }
 
 func Download() {
-	res := getUrlAndFilename()
+	res := loadTasks()
 	if len(res) == 0 {
 		return
 	}
 	defer func() { _ = os.Remove(DataJsonFilePath) }()
 
-	tasks := make([]*UrlAndFilename, 0)
+	tasks := make([]*Task, 0)
 	for _, item := range res {
 		filename := item.Filename
 		fullPath := path.Join(DistDir, filename)
@@ -87,7 +87,7 @@ func Download() {
 		// 并行下载
 
 		size := tasksCount / Coroutines
-		var partitions [][]*UrlAndFilename
+		var partitions [][]*Task
 		if size > 0 {
 			partitions = lo.Chunk(tasks, size)
 		} else {
