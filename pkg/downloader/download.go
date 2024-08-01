@@ -87,6 +87,9 @@ func (d *Downloader) Download() {
 		}
 
 	}
+
+	fmt.Print("")
+	log.Println(colors.Green("完成"))
 }
 
 func (d *Downloader) loadTasks() (tasks []*Task) {
