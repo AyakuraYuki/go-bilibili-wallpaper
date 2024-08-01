@@ -2,14 +2,18 @@ package downloader
 
 import (
 	"fmt"
-	"github.com/AyakuraYuki/bilibili-wallpaper/internal/colors"
-	"github.com/AyakuraYuki/bilibili-wallpaper/internal/file"
-	"github.com/AyakuraYuki/bilibili-wallpaper/internal/misc"
-	"github.com/cavaliergopher/grab/v3"
-	"github.com/samber/lo"
 	"log"
 	"os"
+	"path/filepath"
 	"sync/atomic"
+
+	"github.com/cavaliergopher/grab/v3"
+	"github.com/samber/lo"
+
+	"github.com/AyakuraYuki/bilibili-wallpaper/pkg/downloader/internal/colors"
+	"github.com/AyakuraYuki/bilibili-wallpaper/pkg/downloader/internal/file"
+	"github.com/AyakuraYuki/bilibili-wallpaper/pkg/downloader/internal/filenamify"
+	"github.com/AyakuraYuki/bilibili-wallpaper/pkg/downloader/internal/misc"
 )
 
 func (d *Downloader) Download() {
@@ -25,7 +29,7 @@ func (d *Downloader) Download() {
 
 	tasks := make([]*Task, 0)
 	for _, item := range res {
-		ok, err := file.IsPathExist(item.FullPath)
+		ok, err := file.Exist(item.FullPath)
 		if err != nil {
 			d.verboseLog(colors.Red("err: %v", err))
 			continue
@@ -83,4 +87,33 @@ func (d *Downloader) Download() {
 		}
 
 	}
+}
+
+func (d *Downloader) loadTasks() (tasks []*Task) {
+	tasks = make([]*Task, 0)
+
+	docs, err := d.readDataFile()
+	if err != nil {
+		return tasks
+	}
+
+	for _, doc := range docs {
+		if len(doc.Pictures) == 0 {
+			continue
+		}
+		description := fmt.Sprintf("%s-%s", doc.Title, doc.Description)
+		filename, _ := filenamify.FilenamifyV2(description)
+		for index, picture := range doc.Pictures {
+			ext := filepath.Ext(picture.ImgSrc)
+			taskFilename := fmt.Sprintf("[%d] [%d] %s [%dx%d]%s", doc.DocId, index, filename, picture.ImgWidth, picture.ImgHeight, ext)
+			task := &Task{
+				Filename: taskFilename,
+				FullPath: filepath.Join(d.distDir, taskFilename),
+				Url:      picture.ImgSrc,
+			}
+			d.verboseLog(colors.White("已加载任务 %q (%q)", task.Filename, task.Url))
+			tasks = append(tasks, task)
+		}
+	}
+	return tasks
 }

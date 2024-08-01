@@ -1,8 +1,9 @@
 package commands
 
 import (
-	"github.com/AyakuraYuki/bilibili-wallpaper/pkg/downloader"
 	"github.com/spf13/cobra"
+
+	"github.com/AyakuraYuki/bilibili-wallpaper/pkg/downloader"
 )
 
 const (

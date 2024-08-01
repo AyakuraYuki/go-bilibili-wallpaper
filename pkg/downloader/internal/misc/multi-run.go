@@ -4,10 +4,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"log"
-
 	"github.com/afex/hystrix-go/hystrix"
 	"golang.org/x/sync/errgroup"
+	"log"
 )
 
 // WorkFunc is simple work func
@@ -98,8 +97,9 @@ func MultiRunWithCtx(fs ...WorkFuncWithCtx) error {
 // Hystrix is hystrix circuit breaker
 func Hystrix(name string, run func() error, fallback func(error) error) error {
 	callBackFunc := func(err error) error {
-		if err != nil && IsHystrixErr(err) {
-			log.Printf("[error] name: %s, err: %s", name, err)
+		var circuitError hystrix.CircuitError
+		if err != nil && errors.As(err, &circuitError) {
+			log.Printf("[error] name: %s, err: %v, circuit_error: %v", name, err, circuitError)
 		}
 		if fallback == nil {
 			return err
@@ -107,13 +107,4 @@ func Hystrix(name string, run func() error, fallback func(error) error) error {
 		return fallback(err)
 	}
 	return hystrix.Do(name, run, callBackFunc)
-}
-
-// IsHystrixErr returns if is hystrix error
-func IsHystrixErr(err error) bool {
-	if err == nil {
-		return false
-	}
-	_, ok := err.(hystrix.CircuitError)
-	return ok
 }

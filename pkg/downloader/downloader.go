@@ -9,7 +9,9 @@ import (
 
 	"github.com/go-resty/resty/v2"
 
-	"github.com/AyakuraYuki/bilibili-wallpaper/internal/colors"
+	"github.com/AyakuraYuki/bilibili-wallpaper/pkg/downloader/internal/colors"
+	"github.com/AyakuraYuki/bilibili-wallpaper/pkg/downloader/internal/encoding/json"
+	"github.com/AyakuraYuki/bilibili-wallpaper/pkg/downloader/internal/file"
 )
 
 const (
@@ -70,6 +72,26 @@ func New(opts ...Option) (*Downloader, error) {
 	log.Println(colors.Green("保存路径: %q", downloader.distDir))
 
 	return downloader, nil
+}
+
+func (d *Downloader) readDataFile() (docs []*Doc, err error) {
+	docs = make([]*Doc, 0)
+	content := file.ReadString(d.dataFilePath)
+	err = json.JSON.UnmarshalFromString(content, &docs)
+	if err != nil {
+		log.Println(colors.Red("读取接口数据临时文件失败: %v", err))
+	}
+	return docs, err
+}
+
+func (d *Downloader) writeDataFile(docs []*Doc) error {
+	bs, err := json.JSON.MarshalIndent(&docs, "", "    ")
+	if err != nil {
+		log.Println(colors.Red("保存接口数据到临时文件失败: %v", err))
+		return err
+	}
+	file.SaveString(d.dataFilePath, string(bs))
+	return nil
 }
 
 func (d *Downloader) verboseLog(a ...any) {

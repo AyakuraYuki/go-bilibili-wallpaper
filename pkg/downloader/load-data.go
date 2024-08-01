@@ -1,17 +1,12 @@
 package downloader
 
 import (
-	"fmt"
+	"github.com/AyakuraYuki/bilibili-wallpaper/pkg/downloader/internal/colors"
+	"github.com/spf13/cast"
 	"log"
 	"net/url"
-	"path/filepath"
 
-	"github.com/spf13/cast"
-
-	"github.com/AyakuraYuki/bilibili-wallpaper/internal/colors"
-	"github.com/AyakuraYuki/bilibili-wallpaper/internal/file"
-	"github.com/AyakuraYuki/bilibili-wallpaper/internal/filenamify"
-	cjson "github.com/AyakuraYuki/bilibili-wallpaper/internal/json"
+	"github.com/AyakuraYuki/bilibili-wallpaper/pkg/downloader/internal/encoding/json"
 )
 
 func (d *Downloader) requestDocList() {
@@ -47,7 +42,7 @@ func (d *Downloader) requestDocList() {
 		bs := rsp.Body()
 		d.verboseLog(colors.White("response data: %s", string(bs)))
 		apiRsp := &ApiResponse{}
-		if err = cjson.JSON.Unmarshal(bs, &apiRsp); err != nil {
+		if err = json.JSON.Unmarshal(bs, &apiRsp); err != nil {
 			log.Println(colors.Red("解析壁纸列表响应结果失败: %v", err))
 			maxRetryPerPage++
 			maxRetry++
@@ -64,55 +59,6 @@ func (d *Downloader) requestDocList() {
 		maxRetryPerPage = 0
 	}
 	_ = d.writeDataFile(docs)
-}
-
-func (d *Downloader) loadTasks() (tasks []*Task) {
-	tasks = make([]*Task, 0)
-
-	docs, err := d.readDataFile()
-	if err != nil {
-		return tasks
-	}
-
-	for _, doc := range docs {
-		if len(doc.Pictures) == 0 {
-			continue
-		}
-		description := fmt.Sprintf("%s-%s", doc.Title, doc.Description)
-		filename, _ := filenamify.FilenamifyV2(description)
-		for index, picture := range doc.Pictures {
-			ext := filepath.Ext(picture.ImgSrc)
-			taskFilename := fmt.Sprintf("[%d] [%d] %s [%dx%d]%s", doc.DocId, index, filename, picture.ImgWidth, picture.ImgHeight, ext)
-			task := &Task{
-				Filename: taskFilename,
-				FullPath: filepath.Join(d.distDir, taskFilename),
-				Url:      picture.ImgSrc,
-			}
-			d.verboseLog(colors.White("已加载任务 %q (%q)", task.Filename, task.Url))
-			tasks = append(tasks, task)
-		}
-	}
-	return tasks
-}
-
-func (d *Downloader) readDataFile() (docs []*Doc, err error) {
-	docs = make([]*Doc, 0)
-	content := file.ReadFile(d.dataFilePath)
-	err = cjson.JSON.UnmarshalFromString(content, &docs)
-	if err != nil {
-		log.Println(colors.Red("读取接口数据临时文件失败: %v", err))
-	}
-	return docs, err
-}
-
-func (d *Downloader) writeDataFile(docs []*Doc) error {
-	bs, err := cjson.JSON.MarshalIndent(&docs, "", "    ")
-	if err != nil {
-		log.Println(colors.Red("保存接口数据到临时文件失败: %v", err))
-		return err
-	}
-	file.WriteLines(d.dataFilePath, []string{string(bs)})
-	return nil
 }
 
 func assembleApiUrl(pageNum int) string {
