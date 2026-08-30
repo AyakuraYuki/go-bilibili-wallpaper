@@ -2,11 +2,12 @@ package main
 
 import (
 	"context"
-	"github.com/AyakuraYuki/bilibili-wallpaper/pkg/commands"
 	"log"
 	"os"
 	"os/signal"
 	"syscall"
+
+	"github.com/AyakuraYuki/bilibili-wallpaper/pkg/commands"
 )
 
 func main() {
