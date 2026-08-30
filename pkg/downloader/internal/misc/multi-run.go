@@ -46,7 +46,7 @@ func SafeGo(ctx context.Context, fs ...WorkFuncWithCtx) error {
 		}(i)
 	}
 
-	for i := 0; i < l; i++ {
+	for range l {
 		err := <-errChan
 		if err != nil {
 			return err

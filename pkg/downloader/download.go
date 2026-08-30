@@ -49,7 +49,6 @@ func (d *Downloader) Download() {
 
 		counter := 0
 		for _, task := range tasks {
-			task := task
 			if _, err := grab.Get(task.FullPath, task.Url); err == nil {
 				counter++
 				fmt.Printf("downloading [%v / %v] file: %q \r", counter, tasksCount, task.FullPath)
@@ -70,10 +69,8 @@ func (d *Downloader) Download() {
 		funcs := make([]misc.WorkFunc, 0)
 		var counter atomic.Int32
 		for _, partition := range partitions {
-			partition := partition
 			funcs = append(funcs, func() error {
 				for _, task := range partition {
-					task := task
 					if _, err := grab.Get(task.FullPath, task.Url); err == nil {
 						fmt.Printf("downloading [%v / %v] file: %q \r", counter.Add(1), tasksCount, task.FullPath)
 					}
