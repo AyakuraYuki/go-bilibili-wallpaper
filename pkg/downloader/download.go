@@ -85,7 +85,7 @@ func (d *Downloader) Download() {
 
 	}
 
-	fmt.Print("")
+	fmt.Println("")
 	log.Println(colors.Green("完成"))
 }
 
